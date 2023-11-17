@@ -6,8 +6,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 
-
-
 const AddProduct = () => {
   const [productId, setProductId] = useState(uuidv4());
   const [productData, setProductData] = useState([]);
@@ -44,6 +42,10 @@ const AddProduct = () => {
     uploadedImages: [],
     video: [],
   });
+  console.log(
+    "🚀 ~ file: AddProduct.jsx:45 ~ AddProduct ~ formData:",
+    formData
+  );
 
   useEffect(() => {
     const storedData = localStorage.getItem("productFormData");
@@ -67,55 +69,135 @@ const AddProduct = () => {
   };
 
   const handleInputChange = (field, value) => {
-
-    if (["price", "sku", "lengths", "widths", "heights", "weight", "mpn", "upc", "quantity", "minimumQuantity"].includes(field)) {
+    if (
+      [
+        "price",
+        "sku",
+        "lengths",
+        "widths",
+        "heights",
+        "weight",
+        "mpn",
+        "upc",
+        "quantity",
+        "minimumQuantity",
+      ].includes(field)
+    ) {
       value = parseFloat(value);
     }
 
+    // --------------
+    if (typeof value === "string") {
+      if (value.trim() === "") {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: `${field} is required`,
+        }));
+      } else {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: "",
+        }));
+      }
+    }
+
+    // Additional validation logic for specific fields if needed
+    if (field === "quantity") {
+      const quantityError =
+        value < formData.minimumQuantity
+          ? "Quantity must be more than Minimum Quantity"
+          : "";
+      setFieldErrors((prevErrors) => ({
+        ...prevErrors,
+        quantity: quantityError,
+      }));
+    }
+
+    // Update form data
     setFormData((prevData) => ({
       ...prevData,
       [field]: value,
     }));
-    setFieldErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: "",
-    }));
+
+    // ---------------
+    // setFormData((prevData) => ({
+    //   ...prevData,
+    //   [field]: value,
+    // }));
+    // setFieldErrors((prevErrors) => ({
+    //   ...prevErrors,
+    //   [field]: "",
+    // }));
   };
   const handleSave = () => {
     // Validate Product Name
-    if (!formData.productName.trim()) {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        productName: "Product Name is required",
-      }));
-      return;
-    }
-    // Validate Description
-    if (!formData.description.trim()) {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        description: "Description is required",
-      }));
+    // if (!formData.productName.trim()) {
+    //   setFieldErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     productName: "Product Name is required",
+    //   }));
+    //   return;
+    // }
+    // // Validate Description
+    // if (!formData.description.trim()) {
+    //   setFieldErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     description: "Description is required",
+    //   }));
+    //   return;
+    // }
+
+    // // Validate Meta Tag Title
+    // if (!formData.metaTagTitle.trim()) {
+    //   setFieldErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     metaTagTitle: "Meta Tag Title is required",
+    //   }));
+    //   return;
+    // }
+
+    // // // Validate Model Name
+    // if (!formData.modelName.trim()) {
+    //   setFieldErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     modelName: "Model Name is required",
+    //   }));
+    //   return;
+    // }
+
+    // Minimum quantity Validation
+    // if (formData.quantity < formData.minimumQuantity) {
+    //   setFieldErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     quantity: "Quantity must be more than Minimum Quantity",
+    //   }));
+    //   return;
+    // }
+
+    const requiredFields = ["productName", "description", "metaTagTitle", "modelName"];
+    const missingFields = requiredFields.filter(field => !formData[field].trim());
+    if (missingFields.length > 0) {
+      missingFields.forEach(field => {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: `${field} is required`,
+        }));
+      });
       return;
     }
 
-    // Validate Meta Tag Title
-    if (!formData.metaTagTitle.trim()) {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        metaTagTitle: "Meta Tag Title is required",
-      }));
-      return;
-    }
 
-    // // Validate Model Name
-    if (!formData.modelName.trim()) {
-      setFieldErrors((prevErrors) => ({
-        ...prevErrors,
-        modelName: "Model Name is required",
-      }));
-      return;
-    }
+      // Check for validation errors
+      const hasErrors = Object.values(fieldErrors).some((error) => !!error);
+
+      // If there are errors, stop further execution
+      if (hasErrors) {
+        // You can also display a message or take any other action to inform the user
+        console.log("Validation errors. Cannot save data.");
+        return;
+      }
+
+
 
     const optionId = uuidv4();
     const newOption = {
@@ -161,7 +243,7 @@ const AddProduct = () => {
     // Clear stored images and thumbnails
     localStorage.removeItem("image");
     localStorage.removeItem("thumbnail");
-    toast.success("Product Added Successfully!!!😊😊👌")
+    toast.success("Product Added Successfully!!!😊😊👌");
   };
 
   const handleUpload = (e) => {
@@ -222,40 +304,35 @@ const AddProduct = () => {
   };
 
   return (
-    <motion.div 
-    initial={{ opacity: 0, y: -50 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -50 }}
-    transition={{ duration: 0.6 }}
-    className="max-w-xl mx-auto my-8 p-6 bg-gray-100 rounded-md shadow-md text-gray-800"
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -50 }}
+      transition={{ duration: 0.6 }}
+      className="max-w-xl mx-auto my-8 p-6 bg-gray-100 rounded-md shadow-md text-gray-800"
     >
-
-
-      <Link to="/productlist"
+      <Link
+        to="/productlist"
         className="text-blue-500 hover:underline block text-center mb-6"
-      
       >
         Go to Product List
       </Link>
 
       <div className="flex justify-between items-center mb-4">
         <p className="text-4xl text-blue-700 font-bold">Add Product</p>
-        <motion.div
-        whileHover={{ scale: 1.2 }}
-        >
-        <button
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-          onClick={handleSave}
-        >
-          Save
-        </button>
+        <motion.div whileHover={{ scale: 1.2 }}>
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+            onClick={handleSave}
+          >
+            Save
+          </button>
         </motion.div>
-        
       </div>
 
       <div className="flex mb-4">
         <motion.div
-        whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.2 }}
           className={`cursor-pointer mr-4 py-2 px-4 rounded ${
             activeTab === 1 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
@@ -264,7 +341,7 @@ const AddProduct = () => {
           General
         </motion.div>
         <motion.div
-        whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.2 }}
           className={`cursor-pointer py-2 px-4 rounded ${
             activeTab === 2 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
@@ -273,7 +350,7 @@ const AddProduct = () => {
           Data
         </motion.div>
         <motion.div
-        whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.2 }}
           className={`cursor-pointer py-2 ml-4 px-4 rounded ${
             activeTab === 3 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
@@ -282,7 +359,7 @@ const AddProduct = () => {
           Specification
         </motion.div>
         <motion.div
-        whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.2 }}
           className={`cursor-pointer py-2 ml-4 px-4 rounded ${
             activeTab === 4 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
@@ -295,7 +372,9 @@ const AddProduct = () => {
       <div>
         {activeTab === 1 && (
           <div>
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Product Name:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Product Name:
+            </label>
             <input
               type="text"
               className={`w-full border p-2 rounded ${
@@ -308,7 +387,9 @@ const AddProduct = () => {
               <p className="text-red-500 text-sm">{fieldErrors.productName}</p>
             )}
 
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Description:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Description:
+            </label>
             <input
               type="text"
               className={`w-full border p-2 rounded ${
@@ -322,7 +403,9 @@ const AddProduct = () => {
               <p className="text-red-500 text-sm">{fieldErrors.description}</p>
             )}
 
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Meta Tag Title:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Meta Tag Title:
+            </label>
             <input
               type="text"
               className={`w-full border p-2 rounded ${
@@ -338,7 +421,9 @@ const AddProduct = () => {
               <p className="text-red-500 text-sm">{fieldErrors.metaTagTitle}</p>
             )}
 
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Meta Tag Description:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Meta Tag Description:
+            </label>
             <input
               type="text"
               className="w-full border p-2 rounded"
@@ -354,8 +439,12 @@ const AddProduct = () => {
           <div>
             {/* Model Section */}
             <div>
-              <h1 className="text-3xl underline text-gray-700 text-left">Model</h1>
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Model Name:</label>
+              <h1 className="text-3xl underline text-gray-700 text-left">
+                Model
+              </h1>
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Model Name:
+              </label>
               <input
                 type="text"
                 className={`w-full border p-2 rounded ${
@@ -368,7 +457,9 @@ const AddProduct = () => {
               {fieldErrors.modelName && (
                 <p className="text-red-500 text-sm">{fieldErrors.modelName}</p>
               )}
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Stock Keeping Unit(SKU):</label>
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Stock Keeping Unit(SKU):
+              </label>
               <input
                 type="number"
                 className="w-full border p-2 rounded"
@@ -384,7 +475,9 @@ const AddProduct = () => {
                 value={formData.mpn}
                 onChange={(e) => handleInputChange("mpn", e.target.value)}
               />
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Universal Product Code(UPC):</label>
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Universal Product Code(UPC):
+              </label>
               <input
                 type="number"
                 className="w-full border p-2 rounded"
@@ -395,9 +488,13 @@ const AddProduct = () => {
 
             {/* Price Section */}
             <div>
-              <h1 className="text-3xl underline text-gray-700 text-left">Price</h1>
+              <h1 className="text-3xl underline text-gray-700 text-left">
+                Price
+              </h1>
 
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Price:</label>
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Price:
+              </label>
               <input
                 type="number"
                 className="w-full border p-2 rounded mb-4"
@@ -407,27 +504,44 @@ const AddProduct = () => {
             </div>
             {/* Stock Section */}
             <div>
-              <h1 className="text-3xl underline text-gray-700 text-left">Stock</h1>
+              <h1 className="text-3xl underline text-gray-700 text-left">
+                Stock
+              </h1>
 
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Quantity:</label>
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Minimum Quantity:
+              </label>
               <input
                 type="number"
-                className="w-full border p-2 rounded mb-4"
-                value={formData.quantity}
-                onChange={(e) => handleInputChange("quantity", e.target.value)}
-              />
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Minimum Quantity:</label>
-              <input
-                type="number"
-                className="w-full border p-2 rounded mb-4"
+                className={`w-full border p-2 rounded ${
+                  fieldErrors.minimumQuantity ? "border-red-500" : ""
+                }`}
                 value={formData.minimumQuantity}
                 onChange={(e) =>
                   handleInputChange("minimumQuantity", e.target.value)
                 }
               />
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Out Of Stock Status:</label>
+
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Quantity:
+              </label>
+              <input
+                type="number"
+                className={`w-full border p-2 rounded ${
+                  fieldErrors.quantity ? "border-red-500" : ""
+                }`}
+                value={formData.quantity}
+                onChange={(e) => handleInputChange("quantity", e.target.value)}
+              />
+
+              {fieldErrors.quantity && (
+                <p className="text-red-500 text-sm">{fieldErrors.quantity}</p>
+              )}
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Out Of Stock Status:
+              </label>
               <select
-              className="w-full border p-2 rounded mb-4"
+                className="w-full border p-2 rounded mb-4"
                 value={formData.outOfStockStatus}
                 onChange={(e) =>
                   handleInputChange("outOfStockStatus", e.target.value)
@@ -439,7 +553,9 @@ const AddProduct = () => {
                 <option>Out of Stock</option>
                 <option>Pre-Order</option>
               </select>
-              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Date Available:</label>
+              <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                Date Available:
+              </label>
               <input
                 type="date"
                 className="w-full border p-2 rounded mb-4"
@@ -453,7 +569,9 @@ const AddProduct = () => {
         {/* Specification Section */}
         {activeTab === 3 && (
           <div>
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Dimensions(L X W X H):</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Dimensions(L X W X H):
+            </label>
             <div className="flex">
               {/* length */}
               <input
@@ -481,9 +599,11 @@ const AddProduct = () => {
               />
             </div>
 
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Dimension Class:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Dimension Class:
+            </label>
             <select
-            className="w-full border p-2 rounded mb-4"
+              className="w-full border p-2 rounded mb-4"
               value={formData.dimensionClass}
               onChange={(e) =>
                 handleInputChange("dimensionClass", e.target.value)
@@ -495,16 +615,20 @@ const AddProduct = () => {
               <option>Inch</option>
             </select>
 
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Weight:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Weight:
+            </label>
             <input
               type="number"
               className="w-full border p-2 rounded mb-4"
               value={formData.weight}
               onChange={(e) => handleInputChange("weight", e.target.value)}
             />
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Weight Class:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Weight Class:
+            </label>
             <select
-            className="w-full border p-2 rounded mb-4"
+              className="w-full border p-2 rounded mb-4"
               value={formData.weightClass}
               onChange={(e) => handleInputChange("weightClass", e.target.value)}
             >
@@ -515,9 +639,11 @@ const AddProduct = () => {
               <option>Ounce</option>
             </select>
 
-            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Status:</label>
+            <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+              Status:
+            </label>
             <select
-            className="w-full border p-2 rounded mb-4"
+              className="w-full border p-2 rounded mb-4"
               value={formData.status}
               onChange={(e) => handleInputChange("status", e.target.value)}
             >

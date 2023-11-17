@@ -207,7 +207,6 @@ const EditProductPage = () => {
                   type="text"
                   className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.productName || ""}
-                  // onChange={(e) => setEditedProduct({ ...editedProduct, productName: e.target.value })}
                   onChange={(e) =>
                     setEditedProduct({
                       ...editedProduct,
