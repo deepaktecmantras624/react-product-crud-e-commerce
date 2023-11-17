@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
 
 const EditProductPage = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -128,8 +129,6 @@ const EditProductPage = () => {
   // Render the edit form using the product details
   return (
     <div>
-      <h1>Edit Product - {id}</h1>
-
       <Link
         to="/productlist"
         className="text-blue-500 hover:underline block text-center mb-6"
@@ -148,54 +147,62 @@ const EditProductPage = () => {
         <div className="max-w-xl mx-auto my-8 p-6 bg-gray-100 rounded-md shadow-md text-gray-800">
           <div className="flex justify-between items-center mb-4">
             <p className="text-4xl text-blue-700 font-bold">Edit Products</p>
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-              onClick={handleSaveEdit}
-            >
-              Save
-            </button>
+            <motion.div whileHover={{ scale: 1.2 }}>
+              <button
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+                onClick={handleSaveEdit}
+              >
+                Save
+              </button>
+            </motion.div>
           </div>
 
           <div className="flex mb-4">
-            <div
+            <motion.div
+              whileHover={{ scale: 1.2 }}
               className={`cursor-pointer mr-4 py-2 px-4 rounded ${
                 activeTab === 1 ? "bg-blue-500 text-white" : "bg-gray-300"
               }`}
               onClick={() => handleTabChange(1)}
             >
               General
-            </div>
-            <div
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.2 }}
               className={`cursor-pointer py-2 px-4 rounded ${
                 activeTab === 2 ? "bg-blue-500 text-white" : "bg-gray-300"
               }`}
               onClick={() => handleTabChange(2)}
             >
               Data
-            </div>
-            <div
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.2 }}
               className={`cursor-pointer py-2 ml-4 px-4 rounded ${
                 activeTab === 3 ? "bg-blue-500 text-white" : "bg-gray-300"
               }`}
               onClick={() => handleTabChange(3)}
             >
               Specification
-            </div>
-            <div
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.2 }}
               className={`cursor-pointer py-2 ml-4 px-4 rounded ${
                 activeTab === 4 ? "bg-blue-500 text-white" : "bg-gray-300"
               }`}
               onClick={() => handleTabChange(4)}
             >
               Images
-            </div>
+            </motion.div>
             {/* Add more tabs as needed */}
           </div>
 
           <div>
             {activeTab === 1 && (
               <div>
-                <label className="block mb-2">Product Name:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Product Name:
+                </label>
                 <input
                   type="text"
                   className="w-full border p-2 rounded mb-4"
@@ -208,7 +215,9 @@ const EditProductPage = () => {
                     })
                   }
                 />
-                <label className="block mb-2">Description:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Description:
+                </label>
                 <input
                   type="text"
                   className="w-full border p-2 rounded"
@@ -220,7 +229,9 @@ const EditProductPage = () => {
                     })
                   }
                 />
-                <label className="block mb-2">Meta Tag Title:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Meta Tag Title:
+                </label>
                 <input
                   type="text"
                   className="w-full border p-2 rounded mb-4"
@@ -232,7 +243,9 @@ const EditProductPage = () => {
                     })
                   }
                 />
-                <label className="block mb-2">Meta Tag Description:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Meta Tag Description:
+                </label>
                 <input
                   type="text"
                   className="w-full border p-2 rounded"
@@ -251,8 +264,12 @@ const EditProductPage = () => {
               <div>
                 {/* Model Section */}
                 <div>
-                  <h1 className="text-3xl underline text-gray-700">Model</h1>
-                  <label className="block mb-2">Model Name:</label>
+                  <h1 className="text-3xl underline text-gray-700 text-left">
+                    Model
+                  </h1>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Model Name:
+                  </label>
                   <input
                     type="text"
                     className="w-full border p-2 rounded mb-4"
@@ -264,7 +281,9 @@ const EditProductPage = () => {
                       })
                     }
                   />
-                  <label className="block mb-2">Stock Keeping Unit(SKU):</label>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Stock Keeping Unit(SKU):
+                  </label>
                   <input
                     type="number"
                     className="w-full border p-2 rounded"
@@ -276,7 +295,7 @@ const EditProductPage = () => {
                       })
                     }
                   />{" "}
-                  <label className="block mb-2">
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Manufacture Part Number(MPN):
                   </label>
                   <input
@@ -290,7 +309,7 @@ const EditProductPage = () => {
                       })
                     }
                   />
-                  <label className="block mb-2">
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Universal Product Code(UPC):
                   </label>
                   <input
@@ -308,9 +327,13 @@ const EditProductPage = () => {
 
                 {/* Price Section */}
                 <div>
-                  <h1 className="text-3xl underline text-gray-700">Price</h1>
+                  <h1 className="text-3xl underline text-gray-700 text-left">
+                    Price
+                  </h1>
 
-                  <label className="block mb-2">Price:</label>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Price:
+                  </label>
                   <input
                     type="number"
                     className="w-full border p-2 rounded mb-4"
@@ -325,9 +348,13 @@ const EditProductPage = () => {
                 </div>
                 {/* Stock Section */}
                 <div>
-                  <h1 className="text-3xl underline text-gray-700">Stock</h1>
+                  <h1 className="text-3xl underline text-gray-700 text-left">
+                    Stock
+                  </h1>
 
-                  <label className="block mb-2">Quantity:</label>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Quantity:
+                  </label>
                   <input
                     type="number"
                     className="w-full border p-2 rounded mb-4"
@@ -339,7 +366,9 @@ const EditProductPage = () => {
                       })
                     }
                   />
-                  <label className="block mb-2">Minimum Quantity:</label>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Minimum Quantity:
+                  </label>
                   <input
                     type="number"
                     className="w-full border p-2 rounded mb-4"
@@ -351,8 +380,11 @@ const EditProductPage = () => {
                       })
                     }
                   />
-                  <label className="block mb-2">Out Of Stock Status:</label>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Out Of Stock Status:
+                  </label>
                   <select
+                    className="w-full border p-2 rounded mb-4"
                     value={editedProduct?.outOfStockStatus || ""}
                     onChange={(e) =>
                       setEditedProduct({
@@ -367,7 +399,9 @@ const EditProductPage = () => {
                     <option>Out of Stock</option>
                     <option>Pre-Order</option>
                   </select>
-                  <label className="block mb-2">Date Available:</label>
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Date Available:
+                  </label>
                   <input
                     type="date"
                     className="w-full border p-2 rounded mb-4"
@@ -386,7 +420,9 @@ const EditProductPage = () => {
             {/* Specification Section */}
             {activeTab === 3 && (
               <div>
-                <label className="block mb-2">Dimensions(L X W X H):</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Dimensions(L X W X H):
+                </label>
                 <div className="flex">
                   {/* length */}
                   <input
@@ -429,8 +465,11 @@ const EditProductPage = () => {
                   />
                 </div>
 
-                <label className="block mb-2">Dimension Class:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Dimension Class:
+                </label>
                 <select
+                  className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.dimensionClass || ""}
                   onChange={(e) =>
                     setEditedProduct({
@@ -445,7 +484,9 @@ const EditProductPage = () => {
                   <option>Inch</option>
                 </select>
 
-                <label className="block mb-2">Weight:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Weight:
+                </label>
                 <input
                   type="number"
                   className="w-full border p-2 rounded mb-4"
@@ -457,8 +498,11 @@ const EditProductPage = () => {
                     })
                   }
                 />
-                <label className="block mb-2">Weight Class:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Weight Class:
+                </label>
                 <select
+                  className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.weightClass || ""}
                   onChange={(e) =>
                     setEditedProduct({
@@ -474,8 +518,11 @@ const EditProductPage = () => {
                   <option>Ounce</option>
                 </select>
 
-                <label className="block mb-2">Status:</label>
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Status:
+                </label>
                 <select
+                  className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.status || ""}
                   onChange={(e) =>
                     setEditedProduct({

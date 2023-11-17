@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
+
 
 
 const ProductList = () => {
@@ -28,7 +30,14 @@ const ProductList = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.5 }}
+    className="container mx-auto py-10"
+    
+    >
       <h1 className="text-4xl font-bold text-center mb-8 text-indigo-700">
         Product Table
       </h1>
@@ -39,7 +48,11 @@ const ProductList = () => {
       >
         Go to Add Product
       </Link>
-      <table className=" min-w-[80%] m-auto border border-gray-300">
+      <motion.table 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-w-[80%] m-auto border border-gray-300"
+       >
         <thead>
           <tr>
             <th className="border py-2 px-4">Image</th>
@@ -54,12 +67,18 @@ const ProductList = () => {
               className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
             >
               <td className="border py-2 px-4">
-                <img
+                <motion.div
+                whileHover={{ scale: 2.0 }}
+                >
+                  <img
                   // src={product.images.thumbnail}
                   src={product.data.thumbnail}
                   alt="error"
                   className="w-12 h-12 object-cover rounded"
                 />
+
+                </motion.div>
+                
               </td>
               <td className="border py-2 px-4">{product.data.productName}</td>
 
@@ -83,8 +102,8 @@ const ProductList = () => {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </motion.table>
+    </motion.div>
   );
 };
 

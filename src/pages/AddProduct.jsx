@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
 
 
 
@@ -221,7 +222,15 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto my-8 p-6 bg-gray-100 rounded-md shadow-md text-gray-800">
+    <motion.div 
+    initial={{ opacity: 0, y: -50 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -50 }}
+    transition={{ duration: 0.6 }}
+    className="max-w-xl mx-auto my-8 p-6 bg-gray-100 rounded-md shadow-md text-gray-800"
+    >
+
+
       <Link to="/productlist"
         className="text-blue-500 hover:underline block text-center mb-6"
       
@@ -231,47 +240,56 @@ const AddProduct = () => {
 
       <div className="flex justify-between items-center mb-4">
         <p className="text-4xl text-blue-700 font-bold">Add Product</p>
+        <motion.div
+        whileHover={{ scale: 1.2 }}
+        >
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
           onClick={handleSave}
         >
           Save
         </button>
+        </motion.div>
+        
       </div>
 
       <div className="flex mb-4">
-        <div
+        <motion.div
+        whileHover={{ scale: 1.2 }}
           className={`cursor-pointer mr-4 py-2 px-4 rounded ${
             activeTab === 1 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => handleTabChange(1)}
         >
           General
-        </div>
-        <div
+        </motion.div>
+        <motion.div
+        whileHover={{ scale: 1.2 }}
           className={`cursor-pointer py-2 px-4 rounded ${
             activeTab === 2 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => handleTabChange(2)}
         >
           Data
-        </div>
-        <div
+        </motion.div>
+        <motion.div
+        whileHover={{ scale: 1.2 }}
           className={`cursor-pointer py-2 ml-4 px-4 rounded ${
             activeTab === 3 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => handleTabChange(3)}
         >
           Specification
-        </div>
-        <div
+        </motion.div>
+        <motion.div
+        whileHover={{ scale: 1.2 }}
           className={`cursor-pointer py-2 ml-4 px-4 rounded ${
             activeTab === 4 ? "bg-blue-500 text-white" : "bg-gray-300"
           }`}
           onClick={() => handleTabChange(4)}
         >
           Images
-        </div>
+        </motion.div>
       </div>
 
       <div>
@@ -347,7 +365,7 @@ const AddProduct = () => {
                 value={formData.modelName}
                 onChange={(e) => handleInputChange("modelName", e.target.value)}
               />
-              {fieldErrors.metaTagTitle && (
+              {fieldErrors.modelName && (
                 <p className="text-red-500 text-sm">{fieldErrors.modelName}</p>
               )}
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">Stock Keeping Unit(SKU):</label>
@@ -578,7 +596,7 @@ const AddProduct = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
