@@ -98,7 +98,7 @@ const EditProductPage = () => {
     const file = e.target.files[0];
 
     // Check if the selected file is an image
-    if (file && file.type.startsWith("image")) {
+    if (file && (file.type.startsWith("image") || file.type.startsWith("image/svg"))) {
       const thumbnailURL = URL.createObjectURL(file);
       setEditedProduct((prevData) => ({
         ...prevData,
@@ -119,7 +119,7 @@ const EditProductPage = () => {
 
     const newImages = [];
     const newVideos = [];
-   if(files.filter((e)=>e.type.startsWith("image") || e.type.startsWith("video")).length>0){
+   if(files.filter((e)=>(e.type.startsWith("image") || e.type.startsWith("image/svg")) || e.type.startsWith("video")).length>0){
     for (const file of files) {
       const mediaObject = {
         url: URL.createObjectURL(file),
@@ -302,7 +302,7 @@ const EditProductPage = () => {
             >
               Images
             </motion.div>
-            {/* Add more tabs as needed */}
+            
           </div>
 
           <div>

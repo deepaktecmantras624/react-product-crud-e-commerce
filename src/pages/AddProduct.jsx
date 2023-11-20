@@ -1,4 +1,3 @@
-// import Link from "next/link";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -198,7 +197,7 @@ const AddProduct = () => {
     const files = Array.from(e.target.files);
     if (
       files.filter(
-        (e) => e.type.startsWith("image") || e.type.startsWith("video")
+        (e) => (e.type.startsWith("image") || e.type.startsWith("image/svg")) || e.type.startsWith("video")
       ).length > 0
     ) {
       const newMedia = files.map((file) => ({
@@ -235,7 +234,7 @@ const AddProduct = () => {
     const file = e.target.files[0];
 
     // Check if the selected file is an image
-    if (file && file.type.startsWith("image")) {
+    if (file && (file.type.startsWith("image") || file.type.startsWith("image/svg"))) {
       const thumbnailURL = URL.createObjectURL(file);
       setFormData((prevData) => ({
         ...prevData,

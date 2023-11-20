@@ -4,8 +4,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 
-
-
 const ProductList = () => {
   const [productDetails, setProductDetails] = useState([]);
 
@@ -26,17 +24,16 @@ const ProductList = () => {
     );
 
     setProductDetails(newUpdateOptionAfterDelete);
-    toast.success("Product Deleted Successfully!!!😒😢😢")
+    toast.success("Product Deleted Successfully!!!😒😢😢");
   };
 
   return (
-    <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 2 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.8 }}
-    className="container mx-auto py-10"
-    
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 2 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="container mx-auto py-10"
     >
       <h1 className="text-4xl font-bold text-center mb-8 text-indigo-700">
         Product Table
@@ -48,15 +45,17 @@ const ProductList = () => {
       >
         Go to Add Product
       </Link>
-      <motion.table 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-w-[80%] m-auto border border-gray-300"
-       >
+      <motion.table
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-w-[80%] m-auto border border-gray-300"
+      >
         <thead>
           <tr>
             <th className="border py-2 px-4">Image</th>
             <th className="border py-2 px-4">Product Name</th>
+            <th className="border py-2 px-4">Price</th>
+            <th className="border py-2 px-4">Quantity</th>
             <th className="border py-2 px-4">Actions</th>
           </tr>
         </thead>
@@ -68,22 +67,20 @@ const ProductList = () => {
             >
               <td className="border py-2 px-4 flex items-center justify-center">
                 <motion.div
-                whileHover={{ scale: 1.4, transformOrigin: "center" }}
+                  whileHover={{ scale: 1.4, transformOrigin: "center" }}
                 >
                   <img
-                  src={product.data.thumbnail}
-                  alt="error"
-                  className="w-12 h-12 object-cover rounded"
-                />
-
+                    src={product.data.thumbnail}
+                    alt="error"
+                    className="w-12 h-12 object-cover rounded"
+                  />
                 </motion.div>
-                
               </td>
               <td className="border py-2 px-4">{product.data.productName}</td>
-
+              <td className="border py-2 px-4">$ {product.data.price}</td>
+              <td className="border py-2 px-4">{product.data.quantity}</td>
               <td className="border py-2 px-4">
                 <div className="ml-4">
-
                   <Link
                     className="py-1 px-3 ml-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring focus:border-yellow-800"
                     to={`/edit/${product.id}`}
