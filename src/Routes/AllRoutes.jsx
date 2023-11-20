@@ -11,6 +11,7 @@ const AllRoutes = () => {
         <Route path="/productlist" element={<ProductList />} />
         <Route path="/edit/:id" element={<EditProductPage />} />
 
+        
       </Routes>
     </div>
   );

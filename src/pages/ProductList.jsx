@@ -45,6 +45,7 @@ const ProductList = () => {
       >
         Go to Add Product
       </Link>
+      
       <motion.table
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -70,7 +71,7 @@ const ProductList = () => {
                   whileHover={{ scale: 1.4, transformOrigin: "center" }}
                 >
                   <img
-                    src={product.data.thumbnail}
+                    src={product.data.thumbnail}  
                     alt="error"
                     className="w-12 h-12 object-cover rounded"
                   />
