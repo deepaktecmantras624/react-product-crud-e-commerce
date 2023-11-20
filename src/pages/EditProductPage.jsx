@@ -98,7 +98,10 @@ const EditProductPage = () => {
     const file = e.target.files[0];
 
     // Check if the selected file is an image
-    if (file && (file.type.startsWith("image") || file.type.startsWith("image/svg"))) {
+    if (
+      file &&
+      (file.type.startsWith("image") || file.type.startsWith("image/svg"))
+    ) {
       const thumbnailURL = URL.createObjectURL(file);
       setEditedProduct((prevData) => ({
         ...prevData,
@@ -109,7 +112,7 @@ const EditProductPage = () => {
     } else {
       // Display an error message if a non-image file is selected for the thumbnail
       toast.error("Please select a valid image file for the thumbnail.");
-     
+
       e.target.value = null;
     }
   };
@@ -119,37 +122,44 @@ const EditProductPage = () => {
 
     const newImages = [];
     const newVideos = [];
-   if(files.filter((e)=>(e.type.startsWith("image") || e.type.startsWith("image/svg")) || e.type.startsWith("video")).length>0){
-    for (const file of files) {
-      const mediaObject = {
-        url: URL.createObjectURL(file),
-        type: file.type.startsWith("image") ? "image" : "video",
-        productId: id, // Include the product ID when adding new media
-      };
+    if (
+      files.filter(
+        (e) =>
+          e.type.startsWith("image") ||
+          e.type.startsWith("image/svg") ||
+          e.type.startsWith("video")
+      ).length > 0
+    ) {
+      for (const file of files) {
+        const mediaObject = {
+          url: URL.createObjectURL(file),
+          type: file.type.startsWith("image") ? "image" : "video",
+          productId: id, // Include the product ID when adding new media
+        };
 
-      if (mediaObject.type === "image") {
-        newImages.push(mediaObject);
-      } else {
-        newVideos.push(mediaObject);
+        if (mediaObject.type === "image") {
+          newImages.push(mediaObject);
+        } else {
+          newVideos.push(mediaObject);
+        }
       }
+
+      setEditedProduct((prevProduct) => ({
+        ...prevProduct,
+        uploadedImages: [...prevProduct.uploadedImages, ...newImages],
+        video: [...prevProduct.video, ...newVideos],
+      }));
+
+      const storedMedia =
+        JSON.parse(localStorage.getItem("productMedia")) || [];
+      localStorage.setItem(
+        "productMedia",
+        JSON.stringify([...storedMedia, ...newImages, ...newVideos])
+      );
+    } else {
+      toast.error("Please choose correct image and video format");
+      e.target.value = null;
     }
-
-    setEditedProduct((prevProduct) => ({
-      ...prevProduct,
-      uploadedImages: [...prevProduct.uploadedImages, ...newImages],
-      video: [...prevProduct.video, ...newVideos],
-    }));
-
-    const storedMedia = JSON.parse(localStorage.getItem("productMedia")) || [];
-    localStorage.setItem(
-      "productMedia",
-      JSON.stringify([...storedMedia, ...newImages, ...newVideos])
-    );
-   }else{
-    toast.error("Please choose correct image and video format")
-    e.target.value=null;
-   }
- 
   };
 
   const handleImageRemove = (index) => {
@@ -265,6 +275,7 @@ const EditProductPage = () => {
             </motion.div>
           </div>
 
+
           <div className="flex mb-4">
             <motion.div
               whileHover={{ scale: 1.2 }}
@@ -302,7 +313,6 @@ const EditProductPage = () => {
             >
               Images
             </motion.div>
-            
           </div>
 
           <div>

@@ -96,7 +96,7 @@ const AddProduct = () => {
       }
     }
 
-    // Additional validation logic for specific fields if needed
+    // Additional validation logic for specific fields 
     // Quantity
     if (field === "quantity") {
       const quantityError =
@@ -335,7 +335,7 @@ const AddProduct = () => {
           Images
         </motion.div>
       </div>
-
+      
       <div>
         {activeTab === 1 && (
           <div>
