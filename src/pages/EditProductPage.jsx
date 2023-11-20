@@ -9,6 +9,12 @@ const EditProductPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [editedProduct, setEditedProduct] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    productName: "",
+    description: "",
+    metaTagTitle: "",
+    modelName: "",
+  });
 
   const navigate = useNavigate();
 
@@ -29,6 +35,36 @@ const EditProductPage = () => {
   //   ------------------------3.1
 
   const handleSaveEdit = () => {
+    const requiredFields = [
+      "productName",
+      "description",
+      "metaTagTitle",
+      "modelName",
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !editedProduct[field].trim()
+    );
+    if (missingFields.length > 0) {
+      missingFields.forEach((field) => {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: `${field} is required`,
+        }));
+      });
+      toast.error("Please fill all the field Correctly");
+      return;
+    }
+
+    // Check for validation errors
+    const hasErrors = Object.values(fieldErrors).some((error) => !!error);
+
+    // If there are errors, stop further execution
+    if (hasErrors) {
+      //Display a message
+      console.log("Validation errors. Cannot save data.");
+      return;
+    }
+
     if (editedProduct) {
       // Update the product in the localStorage
       const storedProducts =
@@ -58,14 +94,33 @@ const EditProductPage = () => {
     }
   };
 
+  // const handleThumbnailUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   const thumbnailUrl = URL.createObjectURL(file);
+
+  //   setEditedProduct((prevProduct) => ({
+  //     ...prevProduct,
+  //     thumbnail: thumbnailUrl,
+  //   }));
+  // };
   const handleThumbnailUpload = (e) => {
     const file = e.target.files[0];
-    const thumbnailUrl = URL.createObjectURL(file);
 
-    setEditedProduct((prevProduct) => ({
-      ...prevProduct,
-      thumbnail: thumbnailUrl,
-    }));
+    // Check if the selected file is an image
+    if (file && file.type.startsWith("image")) {
+      const thumbnailURL = URL.createObjectURL(file);
+      setEditedProduct((prevData) => ({
+        ...prevData,
+        thumbnail: thumbnailURL,
+      }));
+
+      localStorage.setItem("thumbnail", JSON.stringify(thumbnailURL));
+    } else {
+      // Display an error message if a non-image file is selected for the thumbnail
+      toast.error("Please select a valid image file for the thumbnail.");
+      // Optionally, you can clear the file input to allow the user to select another file
+      e.target.value = null;
+    }
   };
 
   const handleUpload = (e) => {
@@ -125,6 +180,63 @@ const EditProductPage = () => {
   if (!product) {
     return <div>Loading...</div>;
   }
+
+  // -=-==-=-=-=-=-=-=-=-=--=-=-==-=
+
+  const handleInputChange = (field, value) => {
+    if (
+      [
+        "price",
+        "sku",
+        "lengths",
+        "widths",
+        "heights",
+        "weight",
+        "mpn",
+        "upc",
+        "quantity",
+        "minimumQuantity",
+      ].includes(field)
+    ) {
+      value = parseFloat(value);
+    }
+
+    // --------------
+    if (typeof value === "string") {
+      if (value.trim() === "") {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: `${field} is required`,
+        }));
+      } else {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          [field]: "",
+        }));
+      }
+    }
+
+    // Additional validation logic for specific fields if needed
+    // Quantity
+    if (field === "quantity") {
+      const quantityError =
+        value < editedProduct.minimumQuantity
+          ? "Quantity must be more than Minimum Quantity"
+          : "";
+      setFieldErrors((prevErrors) => ({
+        ...prevErrors,
+        quantity: quantityError,
+      }));
+    }
+
+    // Update form data
+    setEditedProduct((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
   // Render the edit form using the product details
   return (
@@ -203,7 +315,7 @@ const EditProductPage = () => {
                 <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                   Product Name:
                 </label>
-                <input
+                {/* <input
                   type="text"
                   className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.productName || ""}
@@ -213,35 +325,61 @@ const EditProductPage = () => {
                       productName: e.target.value,
                     })
                   }
+                /> */}
+                <input
+                  type="text"
+                  className={`w-full border p-2 rounded ${
+                    fieldErrors.productName ? "border-red-500" : ""
+                  }`}
+                  value={editedProduct?.productName || ""}
+                  onChange={(e) =>
+                    handleInputChange("productName", e.target.value)
+                  }
                 />
+                {fieldErrors.productName && (
+                  <p className="text-red-500 text-sm">
+                    {fieldErrors.productName}
+                  </p>
+                )}
                 <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                   Description:
                 </label>
+
                 <input
                   type="text"
-                  className="w-full border p-2 rounded"
-                  value={editedProduct?.description || ""}
+                  className={`w-full border p-2 rounded ${
+                    fieldErrors.description ? "border-red-500" : ""
+                  }`}
+                  value={editedProduct?.description}
                   onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      description: e.target.value,
-                    })
+                    handleInputChange("description", e.target.value)
                   }
                 />
+                {fieldErrors.description && (
+                  <p className="text-red-600 text-sm">
+                    {fieldErrors.description}
+                  </p>
+                )}
+
                 <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                   Meta Tag Title:
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded mb-4"
+                  className={`w-full border p-2 rounded ${
+                    fieldErrors.metaTagTitle ? "border-red-500" : ""
+                  }`}
                   value={editedProduct?.metaTagTitle || ""}
                   onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      metaTagTitle: e.target.value,
-                    })
+                    handleInputChange("metaTagTitle", e.target.value)
                   }
                 />
+                {fieldErrors.metaTagTitle && (
+                  <p className="text-red-500 text-sm">
+                    {fieldErrors.metaTagTitle}
+                  </p>
+                )}
+
                 <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                   Meta Tag Description:
                 </label>
@@ -250,10 +388,7 @@ const EditProductPage = () => {
                   className="w-full border p-2 rounded"
                   value={editedProduct?.metaTagDescription || ""}
                   onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      metaTagDescription: e.target.value,
-                    })
+                    handleInputChange("metaTagDescription", e.target.value)
                   }
                 />
               </div>
@@ -274,12 +409,14 @@ const EditProductPage = () => {
                     className="w-full border p-2 rounded mb-4"
                     value={editedProduct?.modelName || ""}
                     onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        modelName: e.target.value,
-                      })
+                      handleInputChange("modelName", e.target.value)
                     }
                   />
+                  {fieldErrors.modelName && (
+                    <p className="text-red-500 text-sm">
+                      {fieldErrors.modelName}
+                    </p>
+                  )}
                   <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Stock Keeping Unit(SKU):
                   </label>
@@ -287,12 +424,7 @@ const EditProductPage = () => {
                     type="number"
                     className="w-full border p-2 rounded"
                     value={editedProduct?.sku || ""}
-                    onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        sku: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("sku", e.target.value)}
                   />{" "}
                   <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Manufacture Part Number(MPN):
@@ -301,12 +433,7 @@ const EditProductPage = () => {
                     type="number"
                     className="w-full border p-2 rounded mb-4"
                     value={editedProduct?.mpn || ""}
-                    onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        mpn: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("mpn", e.target.value)}
                   />
                   <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Universal Product Code(UPC):
@@ -315,15 +442,10 @@ const EditProductPage = () => {
                     type="number"
                     className="w-full border p-2 rounded"
                     value={editedProduct?.upc || ""}
-                    onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        upc: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("upc", e.target.value)}
                   />
                 </div>
-
+                <br />
                 {/* Price Section */}
                 <div>
                   <h1 className="text-3xl underline text-gray-700 text-left">
@@ -337,12 +459,7 @@ const EditProductPage = () => {
                     type="number"
                     className="w-full border p-2 rounded mb-4"
                     value={editedProduct?.price || ""}
-                    onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        price: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("price", e.target.value)}
                   />
                 </div>
                 {/* Stock Section */}
@@ -352,33 +469,38 @@ const EditProductPage = () => {
                   </h1>
 
                   <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
-                    Quantity:
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full border p-2 rounded mb-4"
-                    value={editedProduct?.quantity || ""}
-                    onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        quantity: e.target.value,
-                      })
-                    }
-                  />
-                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Minimum Quantity:
                   </label>
                   <input
                     type="number"
-                    className="w-full border p-2 rounded mb-4"
+                    className={`w-full border p-2 rounded ${
+                      fieldErrors.minimumQuantity ? "border-red-500" : ""
+                    }`}
                     value={editedProduct?.minimumQuantity || ""}
                     onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        minimumQuantity: e.target.value,
-                      })
+                      handleInputChange("minimumQuantity", e.target.value)
                     }
                   />
+
+                  <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                    Quantity:
+                  </label>
+                  <input
+                    type="number"
+                    className={`w-full border p-2 rounded ${
+                      fieldErrors.quantity ? "border-red-500" : ""
+                    }`}
+                    value={editedProduct?.quantity || ""}
+                    onChange={(e) =>
+                      handleInputChange("quantity", e.target.value)
+                    }
+                  />
+                  {fieldErrors.quantity && (
+                    <p className="text-red-500 text-sm">
+                      {fieldErrors.quantity}
+                    </p>
+                  )}
+
                   <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                     Out Of Stock Status:
                   </label>
@@ -386,14 +508,10 @@ const EditProductPage = () => {
                     className="w-full border p-2 rounded mb-4"
                     value={editedProduct?.outOfStockStatus || ""}
                     onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        outOfStockStatus: e.target.value,
-                      })
+                      handleInputChange("outOfStockStatus", e.target.value)
                     }
                   >
                     <option>---None---</option>
-                    <option>2-3days</option>
                     <option>In Stock</option>
                     <option>Out of Stock</option>
                     <option>Pre-Order</option>
@@ -404,13 +522,9 @@ const EditProductPage = () => {
                   <input
                     type="date"
                     className="w-full border p-2 rounded mb-4"
+                    min={new Date().toISOString().split("T")[0]}
                     value={editedProduct?.date || ""}
-                    onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        date: e.target.value,
-                      })
-                    }
+                    onChange={(e) => handleInputChange("date", e.target.value)}
                   />
                 </div>
               </div>
@@ -430,10 +544,7 @@ const EditProductPage = () => {
                     value={editedProduct?.lengths || ""}
                     placeholder="length"
                     onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        lengths: e.target.value,
-                      })
+                      handleInputChange("lengths", e.target.value)
                     }
                   />
                   {/* width */}
@@ -443,10 +554,7 @@ const EditProductPage = () => {
                     value={editedProduct?.widths || ""}
                     placeholder="width"
                     onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        widths: e.target.value,
-                      })
+                      handleInputChange("widths", e.target.value)
                     }
                   />
                   {/* height */}
@@ -456,10 +564,7 @@ const EditProductPage = () => {
                     value={editedProduct?.heights || ""}
                     placeholder="height"
                     onChange={(e) =>
-                      setEditedProduct({
-                        ...editedProduct,
-                        heights: e.target.value,
-                      })
+                      handleInputChange("heights", e.target.value)
                     }
                   />
                 </div>
@@ -471,10 +576,7 @@ const EditProductPage = () => {
                   className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.dimensionClass || ""}
                   onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      dimensionClass: e.target.value,
-                    })
+                    handleInputChange("dimensionClass", e.target.value)
                   }
                 >
                   <option>---None---</option>
@@ -490,12 +592,7 @@ const EditProductPage = () => {
                   type="number"
                   className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.weight || ""}
-                  onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      weight: e.target.value,
-                    })
-                  }
+                  onChange={(e) => handleInputChange("weight", e.target.value)}
                 />
                 <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                   Weight Class:
@@ -504,10 +601,7 @@ const EditProductPage = () => {
                   className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.weightClass || ""}
                   onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      weightClass: e.target.value,
-                    })
+                    handleInputChange("weightClass", e.target.value)
                   }
                 >
                   <option>---None---</option>
@@ -523,12 +617,7 @@ const EditProductPage = () => {
                 <select
                   className="w-full border p-2 rounded mb-4"
                   value={editedProduct?.status || ""}
-                  onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      status: e.target.value,
-                    })
-                  }
+                  onChange={(e) => handleInputChange("status", e.target.value)}
                 >
                   <option>---None---</option>
                   <option>Enabled</option>
@@ -577,15 +666,15 @@ const EditProductPage = () => {
                         onClick={() => handleImageRemove(index)}
                         title="Remove Image"
                       >
-                        Remove
+                        x
                       </button>
                     </div>
                   ))}
 
                   {/* Display Video from video */}
                   {editedProduct.video?.map((data, index) => (
-                    <div key={index} className="relative w-1/4 p-2">
-                      <video controls width="100%" autoPlay height="20%">
+                    <div key={index} className="relative w-1/3 p-2">
+                      <video controls width="100%" height="80%">
                         <source src={data.url} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
@@ -594,7 +683,7 @@ const EditProductPage = () => {
                         onClick={() => handleVideoRemove(index)}
                         title="Remove Video"
                       >
-                        Remove
+                        x
                       </button>
                     </div>
                   ))}

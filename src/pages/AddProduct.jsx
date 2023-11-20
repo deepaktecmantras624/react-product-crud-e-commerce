@@ -42,10 +42,6 @@ const AddProduct = () => {
     uploadedImages: [],
     video: [],
   });
-  console.log(
-    "🚀 ~ file: AddProduct.jsx:45 ~ AddProduct ~ formData:",
-    formData
-  );
 
   useEffect(() => {
     const storedData = localStorage.getItem("productFormData");
@@ -102,6 +98,7 @@ const AddProduct = () => {
     }
 
     // Additional validation logic for specific fields if needed
+    // Quantity
     if (field === "quantity") {
       const quantityError =
         value < formData.minimumQuantity
@@ -118,86 +115,37 @@ const AddProduct = () => {
       ...prevData,
       [field]: value,
     }));
-
-    // ---------------
-    // setFormData((prevData) => ({
-    //   ...prevData,
-    //   [field]: value,
-    // }));
-    // setFieldErrors((prevErrors) => ({
-    //   ...prevErrors,
-    //   [field]: "",
-    // }));
   };
   const handleSave = () => {
-    // Validate Product Name
-    // if (!formData.productName.trim()) {
-    //   setFieldErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     productName: "Product Name is required",
-    //   }));
-    //   return;
-    // }
-    // // Validate Description
-    // if (!formData.description.trim()) {
-    //   setFieldErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     description: "Description is required",
-    //   }));
-    //   return;
-    // }
-
-    // // Validate Meta Tag Title
-    // if (!formData.metaTagTitle.trim()) {
-    //   setFieldErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     metaTagTitle: "Meta Tag Title is required",
-    //   }));
-    //   return;
-    // }
-
-    // // // Validate Model Name
-    // if (!formData.modelName.trim()) {
-    //   setFieldErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     modelName: "Model Name is required",
-    //   }));
-    //   return;
-    // }
-
-    // Minimum quantity Validation
-    // if (formData.quantity < formData.minimumQuantity) {
-    //   setFieldErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     quantity: "Quantity must be more than Minimum Quantity",
-    //   }));
-    //   return;
-    // }
-
-    const requiredFields = ["productName", "description", "metaTagTitle", "modelName"];
-    const missingFields = requiredFields.filter(field => !formData[field].trim());
+    const requiredFields = [
+      "productName",
+      "description",
+      "metaTagTitle",
+      "modelName",
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field].trim()
+    );
     if (missingFields.length > 0) {
-      missingFields.forEach(field => {
+      missingFields.forEach((field) => {
         setFieldErrors((prevErrors) => ({
           ...prevErrors,
           [field]: `${field} is required`,
         }));
       });
+      toast.error("Please fill all the field Correctly")
       return;
     }
 
+    // Check for validation errors
+    const hasErrors = Object.values(fieldErrors).some((error) => !!error);
 
-      // Check for validation errors
-      const hasErrors = Object.values(fieldErrors).some((error) => !!error);
-
-      // If there are errors, stop further execution
-      if (hasErrors) {
-        // You can also display a message or take any other action to inform the user
-        console.log("Validation errors. Cannot save data.");
-        return;
-      }
-
-
+    // If there are errors, stop further execution
+    if (hasErrors) {
+      //Display a message
+      console.log("Validation errors. Cannot save data.");
+      return;
+    }
 
     const optionId = uuidv4();
     const newOption = {
@@ -248,39 +196,59 @@ const AddProduct = () => {
 
   const handleUpload = (e) => {
     const files = Array.from(e.target.files);
-    const newMedia = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      type: file.type.startsWith("image") ? "image" : "video",
-    }));
-    // newMedia.find((media) => media.type === "video")?.url || "",
-    setFormData((prevData) => ({
-      ...prevData,
-      uploadedImages: [
-        ...(prevData.uploadedImages || []),
-        ...newMedia.filter((media) => media.type === "image"),
-      ],
-      video: [
-        ...(prevData.video || []),
-        ...newMedia.filter((media) => media.type === "video"),
-      ],
-    }));
-
-    const storedMedia = JSON.parse(localStorage.getItem("productMedia")) || [];
-    localStorage.setItem(
-      "productMedia",
-      JSON.stringify([...storedMedia, ...newMedia])
-    );
+    if( files.filter((e)=>e.type.startsWith("image" || "video"))){  
+      const newMedia = files.map((file) => ({
+        url: URL.createObjectURL(file),
+        type: file.type.startsWith("image") ? "image" : "video",
+      }));
+      setFormData((prevData) => ({
+        ...prevData,
+        uploadedImages: [
+          ...(prevData.uploadedImages || []),
+          ...newMedia.filter((media) => media.type === "image"),
+        ],
+        video: [
+          ...(prevData.video || []),
+          ...newMedia.filter((media) => media.type === "video"),
+        ],
+      }));
+  
+      const storedMedia = JSON.parse(localStorage.getItem("productMedia")) || [];
+      localStorage.setItem(
+        "productMedia",
+        JSON.stringify([...storedMedia, ...newMedia])
+      );
+    }
+    else{
+        // Display an error message if a non-image file is selected for the thumbnail
+        toast.error('Please select a valid image or video file.');
+        // Optionally, you can clear the file input to allow the user to select another file
+        e.target.value = null;
+    }
+    
   };
+ 
+
+
 
   const handleThumbnailUpload = (e) => {
     const file = e.target.files[0];
-    const thumbnailURL = URL.createObjectURL(file);
-    setFormData((prevData) => ({
-      ...prevData,
-      thumbnail: thumbnailURL,
-    }));
-
-    localStorage.setItem("thumbnail", JSON.stringify(thumbnailURL));
+  
+    // Check if the selected file is an image
+    if (file && file.type.startsWith('image')) {
+      const thumbnailURL = URL.createObjectURL(file);
+      setFormData((prevData) => ({
+        ...prevData,
+        thumbnail: thumbnailURL,
+      }));
+  
+      localStorage.setItem('thumbnail', JSON.stringify(thumbnailURL));
+    } else {
+      // Display an error message if a non-image file is selected for the thumbnail
+      toast.error('Please select a valid image file for the thumbnail.');
+      // Optionally, you can clear the file input to allow the user to select another file
+      e.target.value = null;
+    }
   };
 
   const handleImageRemove = (index) => {
@@ -442,6 +410,7 @@ const AddProduct = () => {
               <h1 className="text-3xl underline text-gray-700 text-left">
                 Model
               </h1>
+              
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                 Model Name:
               </label>
@@ -485,13 +454,13 @@ const AddProduct = () => {
                 onChange={(e) => handleInputChange("upc", e.target.value)}
               />
             </div>
-
+            <br/>
             {/* Price Section */}
             <div>
               <h1 className="text-3xl underline text-gray-700 text-left">
                 Price
               </h1>
-
+              
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                 Price:
               </label>
@@ -502,12 +471,13 @@ const AddProduct = () => {
                 onChange={(e) => handleInputChange("price", e.target.value)}
               />
             </div>
+            <br/>
             {/* Stock Section */}
             <div>
               <h1 className="text-3xl underline text-gray-700 text-left">
                 Stock
               </h1>
-
+                
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                 Minimum Quantity:
               </label>
@@ -548,20 +518,46 @@ const AddProduct = () => {
                 }
               >
                 <option>---None---</option>
-                <option>2-3days</option>
                 <option>In Stock</option>
                 <option>Out of Stock</option>
                 <option>Pre-Order</option>
               </select>
+
+              {/* {["Out of Stock", "Pre-Order"].includes(
+                formData.outOfStockStatus
+              ) && (
+                <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
+                  Date Available:
+                </label>
+              )}
+              {["Out of Stock", "Pre-Order"].includes(
+                formData.outOfStockStatus
+              ) ? (
+                <input
+                  type="date"
+                  className="w-full border p-2 rounded mb-4"
+                  value={formData.date}
+                  min={new Date().toISOString().split("T")[0]} 
+                  onChange={(e) => handleInputChange("date", e.target.value)}
+                />
+              ) : (
+                <input
+                  type="date"
+                  className="w-full border p-2 rounded mb-4"
+                  value={formData.date}
+                  disabled
+                />
+              )} */}
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
-                Date Available:
-              </label>
-              <input
-                type="date"
-                className="w-full border p-2 rounded mb-4"
-                value={formData.date}
-                onChange={(e) => handleInputChange("date", e.target.value)}
-              />
+                    Date Available:
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full border p-2 rounded mb-4"
+                    min={new Date().toISOString().split("T")[0]} 
+                    value={formData?.date || ""}
+                    onChange={(e) => handleInputChange("date", e.target.value)}
+                  />
             </div>
           </div>
         )}
@@ -697,15 +693,15 @@ const AddProduct = () => {
                     onClick={() => handleImageRemove(index)}
                     title="Remove Image"
                   >
-                    Remove
+                    x
                   </button>
                 </div>
               ))}
 
               {/* Display Video from video */}
               {formData.video?.map((data, index) => (
-                <div key={index} className="relative w-1/4 p-2">
-                  <video controls width="100%" autoPlay height="20%">
+                <div key={index} className="relative w-1/3 p-2">
+                  <video controls width="100%" height="80%">
                     <source src={data.url} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
@@ -714,7 +710,7 @@ const AddProduct = () => {
                     onClick={() => handleVideoRemove(index)}
                     title="Remove Video"
                   >
-                    Remove
+                    x
                   </button>
                 </div>
               ))}
