@@ -94,15 +94,6 @@ const EditProductPage = () => {
     }
   };
 
-  // const handleThumbnailUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   const thumbnailUrl = URL.createObjectURL(file);
-
-  //   setEditedProduct((prevProduct) => ({
-  //     ...prevProduct,
-  //     thumbnail: thumbnailUrl,
-  //   }));
-  // };
   const handleThumbnailUpload = (e) => {
     const file = e.target.files[0];
 
@@ -118,7 +109,7 @@ const EditProductPage = () => {
     } else {
       // Display an error message if a non-image file is selected for the thumbnail
       toast.error("Please select a valid image file for the thumbnail.");
-      // Optionally, you can clear the file input to allow the user to select another file
+     
       e.target.value = null;
     }
   };
@@ -128,7 +119,7 @@ const EditProductPage = () => {
 
     const newImages = [];
     const newVideos = [];
-
+   if(files.filter((e)=>e.type.startsWith("image") || e.type.startsWith("video")).length>0){
     for (const file of files) {
       const mediaObject = {
         url: URL.createObjectURL(file),
@@ -154,6 +145,11 @@ const EditProductPage = () => {
       "productMedia",
       JSON.stringify([...storedMedia, ...newImages, ...newVideos])
     );
+   }else{
+    toast.error("Please choose correct image and video format")
+    e.target.value=null;
+   }
+ 
   };
 
   const handleImageRemove = (index) => {
@@ -315,17 +311,6 @@ const EditProductPage = () => {
                 <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                   Product Name:
                 </label>
-                {/* <input
-                  type="text"
-                  className="w-full border p-2 rounded mb-4"
-                  value={editedProduct?.productName || ""}
-                  onChange={(e) =>
-                    setEditedProduct({
-                      ...editedProduct,
-                      productName: e.target.value,
-                    })
-                  }
-                /> */}
                 <input
                   type="text"
                   className={`w-full border p-2 rounded ${

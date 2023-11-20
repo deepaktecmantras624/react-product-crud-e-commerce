@@ -32,9 +32,9 @@ const ProductList = () => {
   return (
     <motion.div 
     initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
+    animate={{ opacity: 2 }}
     exit={{ opacity: 0 }}
-    transition={{ duration: 0.5 }}
+    transition={{ duration: 0.8 }}
     className="container mx-auto py-10"
     
     >
@@ -66,12 +66,11 @@ const ProductList = () => {
               key={product.id}
               className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
             >
-              <td className="border py-2 px-4">
+              <td className="border py-2 px-4 flex items-center justify-center">
                 <motion.div
-                whileHover={{ scale: 2.0 }}
+                whileHover={{ scale: 1.4, transformOrigin: "center" }}
                 >
                   <img
-                  // src={product.images.thumbnail}
                   src={product.data.thumbnail}
                   alt="error"
                   className="w-12 h-12 object-cover rounded"

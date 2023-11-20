@@ -133,7 +133,7 @@ const AddProduct = () => {
           [field]: `${field} is required`,
         }));
       });
-      toast.error("Please fill all the field Correctly")
+      toast.error("Please fill all the field Correctly");
       return;
     }
 
@@ -196,7 +196,11 @@ const AddProduct = () => {
 
   const handleUpload = (e) => {
     const files = Array.from(e.target.files);
-    if( files.filter((e)=>e.type.startsWith("image" || "video"))){  
+    if (
+      files.filter(
+        (e) => e.type.startsWith("image") || e.type.startsWith("video")
+      ).length > 0
+    ) {
       const newMedia = files.map((file) => ({
         url: URL.createObjectURL(file),
         type: file.type.startsWith("image") ? "image" : "video",
@@ -212,41 +216,37 @@ const AddProduct = () => {
           ...newMedia.filter((media) => media.type === "video"),
         ],
       }));
-  
-      const storedMedia = JSON.parse(localStorage.getItem("productMedia")) || [];
+
+      const storedMedia =
+        JSON.parse(localStorage.getItem("productMedia")) || [];
       localStorage.setItem(
         "productMedia",
         JSON.stringify([...storedMedia, ...newMedia])
       );
+    } else {
+      // Display an error message if a non-image file is selected for the thumbnail
+      toast.error("Please select a valid image or video file.");
+
+      e.target.value = null;
     }
-    else{
-        // Display an error message if a non-image file is selected for the thumbnail
-        toast.error('Please select a valid image or video file.');
-        // Optionally, you can clear the file input to allow the user to select another file
-        e.target.value = null;
-    }
-    
   };
- 
-
-
 
   const handleThumbnailUpload = (e) => {
     const file = e.target.files[0];
-  
+
     // Check if the selected file is an image
-    if (file && file.type.startsWith('image')) {
+    if (file && file.type.startsWith("image")) {
       const thumbnailURL = URL.createObjectURL(file);
       setFormData((prevData) => ({
         ...prevData,
         thumbnail: thumbnailURL,
       }));
-  
-      localStorage.setItem('thumbnail', JSON.stringify(thumbnailURL));
+
+      localStorage.setItem("thumbnail", JSON.stringify(thumbnailURL));
     } else {
       // Display an error message if a non-image file is selected for the thumbnail
-      toast.error('Please select a valid image file for the thumbnail.');
-      // Optionally, you can clear the file input to allow the user to select another file
+      toast.error("Please select a valid image file for the thumbnail.");
+
       e.target.value = null;
     }
   };
@@ -410,7 +410,6 @@ const AddProduct = () => {
               <h1 className="text-3xl underline text-gray-700 text-left">
                 Model
               </h1>
-              
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                 Model Name:
               </label>
@@ -454,13 +453,13 @@ const AddProduct = () => {
                 onChange={(e) => handleInputChange("upc", e.target.value)}
               />
             </div>
-            <br/>
+            <br />
             {/* Price Section */}
             <div>
               <h1 className="text-3xl underline text-gray-700 text-left">
                 Price
               </h1>
-              
+
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                 Price:
               </label>
@@ -471,13 +470,13 @@ const AddProduct = () => {
                 onChange={(e) => handleInputChange("price", e.target.value)}
               />
             </div>
-            <br/>
+            <br />
             {/* Stock Section */}
             <div>
               <h1 className="text-3xl underline text-gray-700 text-left">
                 Stock
               </h1>
-                
+
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
                 Minimum Quantity:
               </label>
@@ -549,15 +548,15 @@ const AddProduct = () => {
                 />
               )} */}
               <label className="block mb-2 text-lg font-semibold text-gray-800 text-left">
-                    Date Available:
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border p-2 rounded mb-4"
-                    min={new Date().toISOString().split("T")[0]} 
-                    value={formData?.date || ""}
-                    onChange={(e) => handleInputChange("date", e.target.value)}
-                  />
+                Date Available:
+              </label>
+              <input
+                type="date"
+                className="w-full border p-2 rounded mb-4"
+                min={new Date().toISOString().split("T")[0]}
+                value={formData?.date || ""}
+                onChange={(e) => handleInputChange("date", e.target.value)}
+              />
             </div>
           </div>
         )}
